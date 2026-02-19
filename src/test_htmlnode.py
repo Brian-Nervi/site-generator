@@ -1,6 +1,7 @@
 import unittest
 
 from blocks import BlockType, markdown_to_blocks, block_to_block_type, heading_level, block_type_to_html_tag, markdown_to_html_node, text_to_children
+from main import extract_title
 from text_to_markdown import extract_markdown_images, split_nodes_delimiter,extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
 from textnode import TextNode, TextType, text_node_to_html_node
 from htmlnode import HTMLNode, LeafNode, ParentNode
@@ -690,6 +691,42 @@ class TestMarkdownToHtmlNodeCustom(unittest.TestCase):
             html,
             "<div><blockquote>this is <b>quoted</b> text</blockquote></div>",
         )
+
+# test for extract_title
+class TestExtractTitle(unittest.TestCase):
+    def test_extract_title_simple(self):
+        md = """
+        # This is the title
+
+        This is some content.
+        """
+        title = extract_title(md)
+        self.assertEqual(title, "This is the title")
+
+    def test_extract_title_no_title(self):
+        md = """
+        This is some content without a title.
+
+        Still no title here.
+        """
+        with self.assertRaises(Exception) as context:
+            extract_title(md)
+        self.assertIn("Title not found in markdown", str(context.exception))
+
+    def test_extract_title_multiple_headings(self):
+        md = """
+        # First Title
+
+        Some content here.
+
+        ## Subtitle
+
+        More content.
+
+        # Second Title
+        """
+        title = extract_title(md)
+        self.assertEqual(title, "First Title")
 
 if __name__ == "__main__":
     unittest.main()

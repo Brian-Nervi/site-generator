@@ -20,6 +20,8 @@ def block_to_block_type(block):
         return BlockType.code
     elif block.startswith("> "):
         for line in lines:
+            if line.strip() == ">":
+                continue
             if not line.startswith("> "):
                 return BlockType.paragraph
         return BlockType.quote
@@ -84,7 +86,7 @@ def text_to_children(text):
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_link(nodes)
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
-    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
 
     html_nodes = [text_node_to_html_node(node) for node in nodes]
